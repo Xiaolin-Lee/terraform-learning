@@ -19,6 +19,7 @@ steps:
     jdkSourceOption: PreInstalled
 
 - script: |
+    cd webApplication
     chmod +x gradlew
     ./gradlew clean test bootJar
   displayName: "Build Spring Boot"
