@@ -1,0 +1,66 @@
+# =========================
+# Java / Spring Boot
+# =========================
+*.class
+*.log
+
+# Build output
+build/
+out/
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# =========================
+# Gradle
+# =========================
+.gradle/
+
+# Keep Gradle Wrapper
+!gradlew
+!gradlew.bat
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# =========================
+# Terraform
+# =========================
+# Local state
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Sensitive variable files
+*.tfvars
+*.tfvars.json
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Terraform plan files
+*.tfplan
+plan.out
+
+# CLI config
+.terraformrc
+terraform.rc
+
+# Lock file (recommended to keep for teams)
+# !.terraform.lock.hcl
