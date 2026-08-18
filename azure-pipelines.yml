@@ -28,7 +28,7 @@ steps:
   displayName: "Build and Push Docker Image"
   inputs:
     command: buildAndPush
-    containerRegistry: "azure-learning-sc"
+    containerRegistry: "terraform-learning-sc"
     repository: myapp
     Dockerfile: webApplication/Dockerfile
     buildContext: webApplication
