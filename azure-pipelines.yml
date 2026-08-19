@@ -56,9 +56,10 @@ steps:
       fi
       docker run -d \
       --restart always \
-      -e DB_USERNAME="postgresadmin" \
-      -e DB_PASSWORD="$DB_PASSWORD" \
       --name myapp \
       -p 8080:8080 \
-      -e DB_URL="jdbc:postgresql://xlli-learning-postgres.postgres.database.azure.com:5432/postgres?user=$(DB_USERNAME)&password=$(DB_PASSWORD)&sslmode=require" \
+      -e SPRING_DATASOURCE_USERNAME="postgresadmin" \
+      -e SPRING_DATASOURCE_PASSWORD="$DB_PASSWORD" \
+      -e DB_HOST="xlli-learning-postgres.postgres.database.azure.com" \
+      -e DB_PORT="5432" \
       xiaolinterraformacr01.azurecr.io/myapp:latest
