@@ -46,4 +46,4 @@ steps:
       docker stop myapp || true
       docker rm myapp || true
       docker run -d --restart always --name myapp -p 8080:8080 \
-        xiaolinterraformacr01.azurecr.io/myapp:latest
+        xiaolinterraformacr01.azurecr.io/myapp:$(Build.BuildId)
