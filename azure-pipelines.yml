@@ -43,12 +43,22 @@ steps:
     runOptions: inline
     inline: |
       docker pull xiaolinterraformacr01.azurecr.io/myapp:$(Build.BuildId)
+      az login --identity
+      
+      DB_PASSWORD=$(az keyvault secret show \
+      --vault-name xlli-learning-kv \
+      --name db-password \
+      --query value -o tsv)
+      
       if docker ps -a --format '{{.Names}}' | grep -qx "myapp"; then
         docker stop myapp
         docker rm myapp
       fi
       docker run -d \
       --restart always \
+      -e DB_USERNAME="postgresadmin" \
+      -e DB_PASSWORD="$DB_PASSWORD" \
       --name myapp \
       -p 8080:8080 \
-      xiaolinterraformacr01.azurecr.io/myapp:$(Build.BuildId)
+      -e DB_URL="jdbc:postgresql://xlli-learning-postgres.postgres.database.azure.com:5432/postgres?user=$(DB_USERNAME)&password=$(DB_PASSWORD)&sslmode=require" \
+      xiaolinterraformacr01.azurecr.io/myapp:latest
