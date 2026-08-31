@@ -71,7 +71,7 @@ steps:
 
       VM_IP=$(az network public-ip show \
         --resource-group terraform-learning-rg2 \
-        --name <PUBLIC_IP_RESOURCE_NAME> \
+        --name web-public-ip \
         --query ipAddress \
         --output tsv)
 
