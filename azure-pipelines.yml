@@ -95,6 +95,7 @@ steps:
   displayName: "Install Ansible"
 
 - script: |
+    export ANSIBLE_HOST_KEY_CHECKING=False
     ansible web \
       -i ansible/inventory.ini \
       -m ping
