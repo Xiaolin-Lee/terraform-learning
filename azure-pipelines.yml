@@ -60,21 +60,34 @@ steps:
     chmod 600 "$(sshKey.secureFilePath)"
   displayName: "Set SSH key permissions"
 
-- script: |
-    VM_IP=$(az vm show \
-      --resource-group terraform-learning-rg2 \
-      --name web-public-ip \
-      --show-details \
-      --query publicIps \
-      --output tsv)
+- task: AzureCLI@2
+  displayName: "Get VM Public IP"
+  inputs:
+    azureSubscription: "terraform-learning-rg"
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      set -e
 
-    echo "VM IP: $VM_IP"
+      VM_IP=$(az network public-ip show \
+        --resource-group terraform-learning-rg2 \
+        --name <PUBLIC_IP_RESOURCE_NAME> \
+        --query ipAddress \
+        --output tsv)
 
-    cat > ansible/inventory.ini <<EOF
-    [web]
-    sweb-vm ansible_host=$VM_IP ansible_user=azureuser ansible_ssh_private_key_file=$(sshKey.secureFilePath)
-    EOF
-  displayName: "Generate Ansible Inventory"
+      echo "VM_IP=[$VM_IP]"
+
+      if [ -z "$VM_IP" ]; then
+        echo "ERROR: VM_IP is empty"
+        exit 1
+      fi
+
+      cat > ansible/inventory.ini <<EOF
+      [web]
+      sweb-vm ansible_host=$VM_IP ansible_user=azureuser ansible_ssh_private_key_file=$(sshKey.secureFilePath)
+      EOF
+      
+      cat ansible/inventory.ini
 
 - script: |
     python3 -m pip install --user ansible
