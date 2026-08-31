@@ -64,4 +64,4 @@ steps:
       -e DB_HOST="xlli-learning-postgres.postgres.database.azure.com" \
       -e DB_PORT="5432" \
       -e DB_NAME="myapp" \
-      xiaolinterraformacr01.azurecr.io/myapp:latest
+      xiaolinterraformacr01.azurecr.io/myapp:$(Build.BuildId)
