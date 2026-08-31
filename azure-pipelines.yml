@@ -63,7 +63,7 @@ steps:
 - script: |
     VM_IP=$(az vm show \
       --resource-group terraform-learning-rg2 \
-      --name learning-vm \
+      --name web-public-ip \
       --show-details \
       --query publicIps \
       --output tsv)
