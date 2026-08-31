@@ -11,6 +11,21 @@ pool:
 
 steps:
 - checkout: self
+- script: |
+    VM_IP=$(az vm show \
+      --resource-group terraform-learning-rg2 \
+      --name sweb-vm \
+      --show-details \
+      --query publicIps \
+      --output tsv)
+
+    echo "VM IP: $VM_IP"
+
+    cat > ansible/inventory.ini <<EOF
+    [web]
+    sweb-vm ansible_host=$VM_IP ansible_user=azureuser
+    EOF
+  displayName: "Generate Ansible Inventory"
 
 - task: JavaToolInstaller@1
   inputs:
@@ -35,33 +50,69 @@ steps:
     tags: |
       latest
       $(Build.BuildId)
-
-- task: SSH@0
+- task: DownloadSecureFile@1
+  name: sshKey
+  displayName: "Download SSH private key"
   inputs:
-    sshEndpoint: vm-ssh
-    displayName: "Deploy Docker Image"
-    runOptions: inline
-    inline: |
-      az login --identity
-      az acr login --name xiaolinterraformacr01
-      docker pull xiaolinterraformacr01.azurecr.io/myapp:$(Build.BuildId)
-      
-      DB_PASSWORD=$(az keyvault secret show \
-      --vault-name xlli-learning-kv \
-      --name db-password \
-      --query value -o tsv)
-      
-      if docker ps -a --format '{{.Names}}' | grep -qx "myapp"; then
-        docker stop myapp
-        docker rm myapp
-      fi
-      docker run -d \
-      --restart always \
-      --name myapp \
-      -p 8080:8080 \
-      -e SPRING_DATASOURCE_USERNAME="postgresadmin" \
-      -e SPRING_DATASOURCE_PASSWORD="$DB_PASSWORD" \
-      -e DB_HOST="xlli-learning-postgres.postgres.database.azure.com" \
-      -e DB_PORT="5432" \
-      -e DB_NAME="myapp" \
-      xiaolinterraformacr01.azurecr.io/myapp:$(Build.BuildId)
+    secureFile: id_rsa
+
+- script: |
+    chmod 600 "$(sshKey.secureFilePath)"
+  displayName: "Set SSH key permissions"
+
+- script: |
+    VM_IP=$(az vm show \
+      --resource-group terraform-learning-rg2 \
+      --name sweb-vm \
+      --show-details \
+      --query publicIps \
+      --output tsv)
+
+    echo "VM IP: $VM_IP"
+
+    cat > ansible/inventory.ini <<EOF
+    [web]
+    sweb-vm ansible_host=$VM_IP ansible_user=azureuser ansible_ssh_private_key_file=$(sshKey.secureFilePath)
+    EOF
+  displayName: "Generate Ansible Inventory"
+
+- script: |
+    python3 -m pip install --user ansible
+    ansible-galaxy collection install community.docker
+  displayName: "Install Ansible"
+
+- script: |
+    ansible web \
+      -i ansible/inventory.ini \
+      -m ping
+  displayName: "Test Ansible SSH"
+
+#- task: SSH@0
+#  inputs:
+#    sshEndpoint: vm-ssh
+#    displayName: "Deploy Docker Image"
+#    runOptions: inline
+#    inline: |
+#      az login --identity
+#      az acr login --name xiaolinterraformacr01
+#      docker pull xiaolinterraformacr01.azurecr.io/myapp:$(Build.BuildId)
+#
+#      DB_PASSWORD=$(az keyvault secret show \
+#      --vault-name xlli-learning-kv \
+#      --name db-password \
+#      --query value -o tsv)
+#
+#      if docker ps -a --format '{{.Names}}' | grep -qx "myapp"; then
+#        docker stop myapp
+#        docker rm myapp
+#      fi
+#      docker run -d \
+#      --restart always \
+#      --name myapp \
+#      -p 8080:8080 \
+#      -e SPRING_DATASOURCE_USERNAME="postgresadmin" \
+#      -e SPRING_DATASOURCE_PASSWORD="$DB_PASSWORD" \
+#      -e DB_HOST="xlli-learning-postgres.postgres.database.azure.com" \
+#      -e DB_PORT="5432" \
+#      -e DB_NAME="myapp" \
+#      xiaolinterraformacr01.azurecr.io/myapp:$(Build.BuildId)

@@ -1,0 +1,16 @@
+image_tag: latest
+
+acr_login_server: xiaolinterraformacr01.azurecr.io
+acr_name: xiaolinterraformacr01
+
+key_vault_name: xlli-learning-kv
+key_vault_secret_name: db-password
+
+container_name: myapp
+container_port: 8080
+host_port: 8080
+
+db_username: postgresadmin
+db_host: xlli-learning-postgres.postgres.database.azure.com
+db_port: "5432"
+db_name: myapp

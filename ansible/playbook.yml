@@ -1,26 +1,7 @@
 ---
-- name: Configure web server
+- name: Deploy web application
   hosts: web
   become: true
 
-  tasks:
-    - name: Update apt cache
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 3600
-
-    - name: Install Docker
-      ansible.builtin.apt:
-        name: docker.io
-        state: present
-
-    - name: Ensure Docker is running
-      ansible.builtin.service:
-        name: docker
-        state: started
-        enabled: true
-
-    - name: Login to Azure using Managed Identity
-      ansible.builtin.command:
-        cmd: az login --identity
-      changed_when: false
+  roles:
+    - web
