@@ -95,11 +95,11 @@ steps:
   displayName: "Install Ansible"
 
 - script: |
-    export ANSIBLE_HOST_KEY_CHECKING=False
-    ansible web \
-      -i ansible/inventory.ini \
-      -m ping
-  displayName: "Test Ansible SSH"
+    ansible-playbook \
+    -i ansible/inventory.ini \
+    ansible/playbook.yml \
+    -e "image_tag=$(Build.BuildId)"
+  displayName: "Deploy Application with Ansible"
 
 #- task: SSH@0
 #  inputs:
