@@ -42,8 +42,9 @@ steps:
     displayName: "Deploy Docker Image"
     runOptions: inline
     inline: |
-      docker pull xiaolinterraformacr01.azurecr.io/myapp:$(Build.BuildId)
       az login --identity
+      az acr login --name xiaolinterraformacr01
+      docker pull xiaolinterraformacr01.azurecr.io/myapp:$(Build.BuildId)
       
       DB_PASSWORD=$(az keyvault secret show \
       --vault-name xlli-learning-kv \
